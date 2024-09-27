@@ -363,7 +363,7 @@
 	
 		<scene name="scene16" title="龍岡國中" onstart="activatespot1(170)" thumburl="panos/1_11.tiles/thumb.jpg" lat="" lng="" heading="">
 
-		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="12.0" fovmin="70" fovmax="140" limitview="auto" />
+		<view hlookat="0" vlookat="90" fovtype="MFOV" fov="120" maxpixelzoom="12.0" fovmin="70" fovmax="140" limitview="auto" />
 
 		<preview url="panos/1_11.tiles/preview.jpg" />
 
