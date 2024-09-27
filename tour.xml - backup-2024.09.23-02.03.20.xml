@@ -1,0 +1,187 @@
+﻿<krpano version="1.19-pr15" title="Virtual Tour" debugmode="true" tileserver="">
+
+<include url="skin/vtourskin.xml" />
+	
+
+
+	<!-- customize skin settings: maps, gyro, webvr, thumbnails, tooltips, layout, design, ... -->
+	<skin_settings maps="true"
+	               maps_type="google"
+	               maps_bing_api_key=""
+	               maps_google_api_key=""
+	               maps_zoombuttons="true"
+	               gyro="true"
+	               webvr="false"
+	               webvr_gyro_keeplookingdirection="true"
+	               webvr_prev_next_hotspots="false"
+	               littleplanetintro="true"
+	               title="true"
+	               thumbs="false"
+	               thumbs_width="120" thumbs_height="80" thumbs_padding="10" thumbs_crop="0|40|240|160"
+	               thumbs_opened="false"
+	               thumbs_text="false"
+	               thumbs_dragging="false"
+	               thumbs_onhoverscrolling="false"
+	               thumbs_scrollbuttons="false"
+	               thumbs_scrollindicator="false"
+	               thumbs_loop="false"
+	               tooltips_buttons="false"
+	               tooltips_thumbs="false"
+	               tooltips_hotspots="true"
+	               tooltips_mapspots="true"
+	               deeplinking="true"
+	               loadscene_flags="MERGE"
+	               loadscene_blend="OPENBLEND(0.5, 0.0, 0.75, 0.05, linear)"
+	               loadscene_blend_prev="SLIDEBLEND(0.5, 180, 0.75, linear)"
+	               loadscene_blend_next="SLIDEBLEND(0.5,   0, 0.75, linear)"
+	               loadingtext="loading..."
+	               layout_width="100%"
+	               layout_maxwidth="814"
+	               controlbar_width="-24"
+	               controlbar_height="40"
+	               controlbar_offset="20"
+	               controlbar_offset_closed="-40"
+	               controlbar_overlap.no-fractionalscaling="10"
+	               controlbar_overlap.fractionalscaling="0"
+	               design_skin_images="vtourskin.png"
+	               design_bgcolor="0x2D3E50"
+	               design_bgalpha="0.8"
+	               design_bgborder="0"
+	               design_bgroundedge="1"
+	               design_bgshadow="0 4 10 0x000000 0.3"
+	               design_thumbborder_bgborder="3 0xFFFFFF 1.0"
+	               design_thumbborder_padding="2"
+	               design_thumbborder_bgroundedge="0"
+	               design_text_css="color:#FFFFFF; font-family:Arial;"
+	               design_text_shadow="1"
+	               />
+
+	<!--
+	    For an alternative skin design either change the <skin_settings> values 
+	    from above or optionally include one of the predefined designs from below.
+	-->
+	<!-- <include url="skin/vtourskin_design_flat_light.xml"  /> -->
+	<!-- <include url="skin/vtourskin_design_glass.xml"       /> -->
+	<!-- <include url="skin/vtourskin_design_ultra_light.xml" /> -->
+	<!-- <include url="skin/vtourskin_design_117.xml"         /> -->
+	<!-- <include url="skin/vtourskin_design_117round.xml"    /> -->
+	<!-- <include url="skin/vtourskin_design_black.xml"       /> -->
+	<!-- <include url="skin/vtourskin.xml"/> -->
+	<events name="tourEve" onmousewheel="image_mouse();" keep="true"/>
+	<!-- <<events name="image_zoom_events" onmousewheel="image_mouse();" /> -->
+	<action name="image_mouse">
+		<!-- trace('缩放'); -->
+		mul(sit,get(wheeldelta),0.05);
+		trace(get(sit));
+		<!-- trace(wheeldelta); -->
+		trace(wheeldelta_touchscale);
+		set(layer[text].html,get(wheeldelta_touchscale));
+		if(
+			wheeldelta_touchscale GT 0,
+			trace("触屏缩放"),
+			trace("滚轮缩放");
+			set(layer[text].html,get(wheeldelta_touchscale))
+			<!-- trace(wheeldelta_raw); -->
+		)
+	</action>
+	<action name="xmlCom">
+		trace("898989");
+		set(layer['jiaotong'].bgcolor,0x1c93fa);
+		for(set(i,0),i LT hotspot.count,inc(i),if(hotspot[get(i)].group === 'jiaotong',set(hotspot[get(i)].visible,true)));
+		done2();
+		action1();
+	</action>
+	<action name="startup" autorun="onstart">
+		if(startscene === null OR !scene[get(startscene)], copy(startscene,scene['scene_0'].name); );
+		loadscene(get(startscene));
+		xmlCom();
+	</action>
+	<action name="done">
+		tween(hotspot['spot1'].atv,3,1,default,done2());
+	</action>
+	<action name="done2">
+		tween(hotspot['spot1'].atv,-3,1,default,done());
+	</action>
+	<style name="hotspotstyle_label" type="image" mode="down" edge="center" foot="30"/>
+	<style 
+		name="wbkp_hotspotstyle_group" 
+		type="text"  
+		x="200" 
+		y="200" 
+		css="font-size:12px; text-align:center; color:#fff; padding:1px 8px;" bgcolor="0x000000" bgalpha="0.5" bgborder="0 0x00FF00 0" bgshadow="0 1 0 0x1c93fa 0.6" 
+		bgroundedge="12" 
+		edge="left"
+		onclick="sk1(name,group)"
+		/>
+	<action name="sk1" args="name,group">
+		for(set(i,0),i LT layer.count,inc(i),
+			if(layer[get(i)].name === name,
+				set(layer[get(i)].bgcolor,0x1c93fa),
+				set(layer[get(i)].bgcolor,0x000000);
+			)
+		);
+		for(set(i,0),i LT hotspot.count,inc(i),
+			if(hotspot[get(i)].group === group,
+				set(hotspot[get(i)].visible,true),
+				set(hotspot[get(i)].visible,false);
+			)
+		);
+	</action>
+	<style name="skin_hotspotstyle" url="skin/000.png" edge="center" distorted="true"
+	       
+	       />
+
+		
+	
+	<action name="skin_hotspotstyle_click" scope="local">
+		loadpanoscene('house.xml','scene_2_4');
+		
+	</action>
+	<autorotate enabled="false" waittime="1" speed="10.0"/>
+
+	<scene name="scene_0" title="首頁" onstart="" thumburl="panos/0.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="9.889" vlookat="90.000" fovtype="MFOV" fov="120.000" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="%SWFPATH%/panos/0.tiles/preview.jpg" />
+
+		<image>
+			<Cube url="%$tileserver%panos/0.tiles/pano_%s.jpg" />
+		</image>
+		<!-- <include url="frame.xml" /> -->
+		
+		<hotspot name="spot0" style="skin_hotspotstyle" ath="86.669" atv="56.545" linkedscene="scene_2_4" />
+		<hotspot name="spot1" style="skin_hotspotstyle" ath="86.669" atv="56.545" linkedscene="scene_0" />
+		<hotspot name="spot2" style="skin_hotspotstyle" ath="86.669" atv="56.545" linkedscene="scene_0" />
+
+		
+	</scene>
+	
+	
+	<style 
+		name="footer_style"
+		width="530"
+		height="46"
+		/>
+	<action name="action1">
+		set(length,-60);
+		for(
+			set(i,0),i LT layer.count,inc(i),
+			subtxt(start,layer[get(i)].name,0,7);
+			if(
+				start === 'contain',
+				inc(length,60);
+				set(layer[get(i)].x,get(length));
+			)
+		);
+	</action>
+	<action name="flagHandle">
+		if(layer['footer'].width !== '30',		
+			tween(layer['footer'].width,30,1,default,done2()),
+			tween(layer['footer'].width,530,1,default,done2());
+		)
+	</action>
+	<action name="autuRateHandle">
+		if(autorotate.enabled,autorotate.stop(),autorotate.start(););
+	</action>
+</krpano>

@@ -1,0 +1,57 @@
+<krpano>
+
+<!--地图按钮-->
+<layer name="huxing"  url="%SWFPATH%/skin/close_Map.png" align="left" scale="1" zorder="2" alpha="1" x="0" y="0" keep="true" onclick="openmap();" />
+<!--地图按钮-->
+
+<!--插入底层容器-->	
+<layer name="mapcontainer" keep="true" type="container" bgcolor="0x000000" bgalpha="0.0" align="left" x="-346" y="0" width="346" height="354"  parent="huxing">
+	
+<!--插入地图图片	-->
+	<layer name="map" url="%SWFPATH%/skin/huxing.png" align="left" x="0" y="0" width="346" height="354" handcursor="false" >
+	
+	<!-- 户型图雷达指针 -->
+	<plugin name="radar" url="%SWFPATH%/plugins/radar.swf" alturl="%SWFPATH%/plugins/radar.js" editmode="true" zorder="1" keep="true" heading="0"  parent="mapbar" align="lefttop" edge="center" x="0" y="0" linecolor="0"  fillcolor="0xFF9900" scale="0.5" />
+	<plugin name="activespot" url="skin/current_pano.png" keep="true" align="lefttop" x="11" y = "11" edge="center" visible="true" zorder="6" />
+	<!-- 户型图雷达指针  -->
+	
+	<!--插入热点-->
+		<layer name="spot1" url="%SWFPATH%/skin/hot.png"  align="lefttop" edge="center" x="156" y="166" zorder="2" onclick="loadscene(scene_1);" />
+		
+		<layer name="spot2" url="%SWFPATH%/skin/hot.png"  align="lefttop" edge="center" x="111" y="216" zorder="2" onclick="loadscene(scene_2);" />
+	
+	
+	
+	</layer>
+	
+</layer>
+	
+	
+	
+<action name="closemap">
+		<!--设定下一次onclick的动作-->
+        set(onclick, openmap() );
+        <!-- 改变XY坐标，将导航图容器移出屏幕，移出过程不设置，即为默认0.5秒-->
+        tween(layer[huxing].x,0,0.5);
+		 tween(layer[huxing].y,0,0.5);
+     </action>
+    <action name="openmap">
+		<!--设定下一次onclick的动作-->
+        set(onclick, closemap() );
+       <!-- 改变XY坐标，将导航图容器移入屏幕，移入过程为1秒-->
+        tween(layer[huxing].x,346,0.5);
+		tween(layer[huxing].y,0,0.5);
+    </action>
+	
+	<!--地图雷达切换-->
+	<action name="activatespot">
+			set(plugin[activespot].parent, plugin[%1]);
+			set(plugin[activespot].visible, true);
+			copy(plugin[radar].x, plugin[%1].x);
+			copy(plugin[radar].y, plugin[%1].y);
+			set(plugin[radar].visible, true);
+			set(plugin[radar].heading, %2);
+	</action>
+	<!--地图雷达切换-->
+
+</krpano>

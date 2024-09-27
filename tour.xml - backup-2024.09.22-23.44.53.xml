@@ -1,0 +1,214 @@
+﻿<krpano version="1.19-pr15" title="Virtual Tour" debugmode="true" tileserver="">
+
+	<!-- <include url="skin/vtourskin.xml"/> -->
+	<events name="tourEve" onmousewheel="image_mouse();" keep="true"/>
+	<!-- <<events name="image_zoom_events" onmousewheel="image_mouse();" /> -->
+	<action name="image_mouse">
+		<!-- trace('缩放'); -->
+		mul(sit,get(wheeldelta),0.05);
+		trace(get(sit));
+		<!-- trace(wheeldelta); -->
+		trace(wheeldelta_touchscale);
+		set(layer[text].html,get(wheeldelta_touchscale));
+		if(
+			wheeldelta_touchscale GT 0,
+			trace("触屏缩放"),
+			trace("滚轮缩放");
+			set(layer[text].html,get(wheeldelta_touchscale))
+			<!-- trace(wheeldelta_raw); -->
+		)
+	</action>
+	<action name="xmlCom">
+		trace("898989");
+		set(layer['jiaotong'].bgcolor,0x1c93fa);
+		for(set(i,0),i LT hotspot.count,inc(i),if(hotspot[get(i)].group === 'jiaotong',set(hotspot[get(i)].visible,true)));
+		done2();
+		action1();
+	</action>
+	<action name="startup" autorun="onstart">
+		if(startscene === null OR !scene[get(startscene)], copy(startscene,scene['scene_images'].name); );
+		loadscene(get(startscene));
+		xmlCom();
+	</action>
+	<action name="done">
+		tween(hotspot['spot1'].atv,3,1,default,done2());
+	</action>
+	<action name="done2">
+		tween(hotspot['spot1'].atv,-3,1,default,done());
+	</action>
+	<style name="hotspotstyle_label" type="image" mode="down" edge="center" foot="30"/>
+	<style 
+		name="wbkp_hotspotstyle_group" 
+		type="text"  
+		x="10" 
+		y="500" 
+		css="font-size:12px; text-align:center; color:#fff; padding:1px 8px;" bgcolor="0x000000" bgalpha="0.5" bgborder="0 0x00FF00 0" bgshadow="0 1 0 0x1c93fa 0.6" 
+		bgroundedge="12" 
+		edge="left"
+		onclick="sk1(name,group)"
+		/>
+	<action name="sk1" args="name,group">
+		for(set(i,0),i LT layer.count,inc(i),
+			if(layer[get(i)].name === name,
+				set(layer[get(i)].bgcolor,0x1c93fa),
+				set(layer[get(i)].bgcolor,0x000000);
+			)
+		);
+		for(set(i,0),i LT hotspot.count,inc(i),
+			if(hotspot[get(i)].group === group,
+				set(hotspot[get(i)].visible,true),
+				set(hotspot[get(i)].visible,false);
+			)
+		);
+	</action>
+	<style name="skin_hotspotstyle" url="skin/yjypsydk.png" edge="top" distorted="true"
+	       tooltip="交通"
+	       linkedscene=""
+	       linkedscene_lookat=""
+	       onclick="skin_hotspotstyle_click();"
+	       depth="1000"
+	       scale="0.5"
+	       onover.addevent="tween(scale,0.55);"
+	       onout.addevent="tween(scale,0.5);"
+	       />
+	<layer 
+		name="frame_layer" 
+		type="container"  
+		width="100%" 
+		height="100%" 
+		bgalpha="0.5"
+		bgcolor="0xFFFFFF">
+		<layer 
+			name="frame_content" 
+			parent="frame_layer"
+			type="container" 
+			align="center" 
+			width="300" 
+			height="500" 
+			bgalpha="0.5"
+			bgcolor="0xFFFFFF" 
+			bgroundedge="50" >
+			<layer 
+				name="frame_content-head" 
+				parent="frame_content" 
+				align="center"
+				type="text" 
+				html="弹框内容">
+			</layer>
+		</layer>
+	</layer>
+	<action name="skin_hotspotstyle_click" scope="local">
+		loadpanoscene('house.xml','scene_2kt');
+		
+	</action>
+	<autorotate enabled="false" waittime="1" speed="10.0"/>
+
+	<scene name="scene_images" title="区域沙盘" onstart="" thumburl="panos/images.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="%SWFPATH%/panos/images.tiles/preview.jpg" />
+
+		<image>
+			<Cube url="%$tileserver%panos/images.tiles/pano_%s.jpg" />
+		</image>
+		<!-- <include url="frame.xml" /> -->
+		<layer name="jiaotong" group="jiaotong" style="wbkp_hotspotstyle_group" default="true" html="交通配套" color="0xff2f6f" x="10" y="80"/>
+		<layer name="jiaoyuyiliao" group="jiaoyuyiliao" style="wbkp_hotspotstyle_group" html="医疗配套" color="0xe42fff" x="10" y="110" />
+		<layer name="jiaoyupeitao" group="jiaoyupeitao" style="wbkp_hotspotstyle_group" html="教育配套" color="0x652fff" x="10" y="140"/>
+		<layer name="fanhuashangquan" group="fanhuashangquan" style="wbkp_hotspotstyle_group" html="商业配套" color="0x2fa9ff" x="10" y="170"/>
+		<layer name="shanshuily" group="shanshuily" style="wbkp_hotspotstyle_group" html="公园配套" color="0x2fffe9" x="10" y="200"/>
+		<layer name="zhengwupeitao" group="zhengwupeitao" style="wbkp_hotspotstyle_group" html="政务配套" color="0x2fff2f" x="10" y="230"/>
+		<layer name="qitapeitao" group="qitapeitao" style="wbkp_hotspotstyle_group" html="其他配套" color="0xfffd2f" x="10" y="260"/>
+		<hotspot name="spot1" group="jiaotong" style="skin_hotspotstyle" ath="50.960" atv="0.603" linkedscene="scene_images" visible="false"/>
+		<hotspot name="spot2" group="jiaoyuyiliao" style="skin_hotspotstyle" ath="-50.960" atv="0.603"  linkedscene="scene_images" visible="false"/>
+
+		<layer 
+			name="control" 
+			group="screen-right" 
+			type="container" 
+			align="rightcenter" 
+			width="200" 
+			height="200" 
+			bgalpha="0.5" 
+			bgroundedge="50" 
+			scalechildren="true"
+			x="20"
+			maskchildren="true">
+			<layer name="control_auto" css="color:#fff;" type="text" html="浏览" bgalpha="0" align="top" onclick="autuRateHandle"/>
+			<layer name="frame" css="color:#fff;" type="text" html="弹框" bgalpha="0" align="top" y="20"
+			arg="frame_layer" onclick="frameHandle()"/>
+			<layer name="text" css="color:#fff;" type="text" html="内容22" bgalpha="0" align="top" y="40"
+			arg="frame_layer" />
+		</layer>
+	</scene>
+	<layer 
+		name="footer" 
+		keep="true" 
+		style="footer_style" 
+		type="container" 
+		align="leftbottom" 
+		bgalpha="0.5"
+		x="10" y="10" 
+		scalechildren="true"
+		maskchildren="true"
+		bgroundedge="50">
+		<layer name="flag" type="image" url="skin/back.png" parent="footer" width="20" height="20" align="leftcenter" x="10" onclick="flagHandle"/>
+		<layer name="footer_all" type="container" align="leftcenter" parent="footer" x="30" width="500" height="46">
+			
+			<layer name="contain0" type="container" bgalpha="0" width="60" parent="footer_all" align="leftcenter" scalechildren="true">
+				<layer name="sanweishapan" type="text" css="color:#fff;" bgalpha="0" html="三维沙盘" parent="contain0" align="center" 
+					onclick="loadpanoscene('%SWFPATH%/tour.xml','scene_images',null,MERGE,BLEND(1,easeinoutback));set(layer['mapcontainer'].visible,false)"/>
+			</layer>
+			<layer name="contain1" type="container" bgalpha="0" width="60" parent="footer_all" align="leftcenter">
+				<layer name="yuyingjiangfang" type="text" css="color:#fff;" bgalpha="0" html="语音讲房" parent="contain1" align="center"/>
+			</layer>
+			<layer name="contain2" type="container" bgalpha="0" width="60" parent="footer_all" align="leftcenter">
+				<layer name="yangbanjian" type="text" css="color:#fff;" bgalpha="0" html="样板间" parent="contain2" align="center"/>
+			</layer>
+			<layer name="contain3" type="container" bgalpha="0" width="60" parent="footer_all" align="leftcenter">
+				<layer name="huxingjianshang" type="text" css="color:#fff;" bgalpha="0" html="户型鉴赏" parent="contain3" align="center"
+					onclick="skin_hotspotstyle_click"/>
+			</layer>
+			<layer name="contain4" type="container" bgalpha="0" width="60" parent="footer_all" align="leftcenter">
+				<layer name="quweijiaotong" type="text" css="color:#fff;" bgalpha="0" html="区位交通" parent="contain4" align="center"/>
+			</layer>
+			<layer name="contain5" type="container" bgalpha="0" width="60" parent="footer_all" align="leftcenter">
+				<layer name="loushu" type="text" css="color:#fff;" bgalpha="0" html="楼书" parent="contain5" align="center"/>
+			</layer>
+			<layer name="contain6" type="container" bgalpha="0" width="60" parent="footer_all" align="leftcenter">
+				<layer name="zhouce" type="text" css="color:#fff;" bgalpha="0" html="720轴侧" parent="contain6" align="center"/>
+			</layer>
+			<layer name="contain7" type="container" bgalpha="0" width="60" parent="footer_all" align="leftcenter">
+				<layer name="xuanchuan" type="text" css="color:#fff;" bgalpha="0" html="宣传片" parent="contain7" align="center"/>
+			</layer>
+		</layer>
+
+	</layer>
+	<style 
+		name="footer_style"
+		width="530"
+		height="46"
+		/>
+	<action name="action1">
+		set(length,-60);
+		for(
+			set(i,0),i LT layer.count,inc(i),
+			subtxt(start,layer[get(i)].name,0,7);
+			if(
+				start === 'contain',
+				inc(length,60);
+				set(layer[get(i)].x,get(length));
+			)
+		);
+	</action>
+	<action name="flagHandle">
+		if(layer['footer'].width !== '30',		
+			tween(layer['footer'].width,30,1,default,done2()),
+			tween(layer['footer'].width,530,1,default,done2());
+		)
+	</action>
+	<action name="autuRateHandle">
+		if(autorotate.enabled,autorotate.stop(),autorotate.start(););
+	</action>
+</krpano>

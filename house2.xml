@@ -1,0 +1,486 @@
+﻿<krpano version="1.19" title="house2" debugmode="true">
+
+	<events name="house2Eve" onxmlcomplete="set(layer['huxing2'].visible,true)"/>
+	<events name="house000Eve" onnewscene="openmap();"/>
+	<action name="startups" autorun="onstart">
+		<!-- trace("haha",scene[18].name) -->
+		if(startscenes === null OR !scene[get(startscenes)], copy(startscenes,scene[18].name); );
+		loadscene(get(startscenes)); 
+		set(layer['mapcontainer2'].visible,true);    
+		trace("加载完成");
+	</action>
+	<!-- 自定义地图 -->
+	<!--地图按钮-->
+<layer name="huxing2"  url="skin/close_Map.png" align="lefttop" scale="1.2" zorder="2" alpha="0.75" x="750" y="0" keep="true" onclick="closemap();" />
+<layer name="type6"  url="skin/Map_222.png" align="lefttop" scale="1" zorder="2" alpha="0.75" x="0" y="300" keep="true" parent="huxing2" onclick="type6();" />
+<layer name="type7"  url="skin/Map_333.png" align="lefttop" scale="1" zorder="2" alpha="0.75" x="0" y="400" keep="true" parent="huxing2" onclick="type7();" />
+<layer name="type9"  url="skin/Map_1111.png" align="lefttop" scale="1" zorder="2" alpha="0.75" x="0" y="200" keep="true" parent="huxing2"  />
+<!--地图按钮-->
+	<layer name="mapcontainer2" visible="false" keep="true" type="container" bgcolor="0x000000" bgalpha="0.7"  bgroundedge="0.5" x="-800" y="0" width="800" height="650" parent="huxing2">
+		<!-- handcursor当鼠标悬浮上面显示手势 -->
+		
+		
+		<layer name="map2" url="skin/map03.jpg" align="center" x="0" y="0" width="prop" height=" 600" handcursor="false" scalechildren="false" parent="huxing2">
+			<!-- 雷达遮罩部分 -->
+			<!-- maskchildren:当设置为true时，父元素之外的所有子元素将被剪切/屏蔽掉。 -->
+			<layer name="radarmask2" type="container" align="lefttop" width="100%" height="100%" maskchildren="true"  parent="huxing2">
+				<!-- 雷达插件 zoder=1 在开始时为隐藏，只有激活activetespot这个action时才会显示 zorder为叠放次序 数字越大越靠前 -->
+				<layer 
+					name="radar2" 
+					visible="false"
+					url="plugins/radar.swf"
+					alturl="plugins/radar.js"
+					align="lefttop"
+					edge="center"
+					zorder="1"
+					scale="0.9"
+			       	fillcolor="0xFFFFFF" fillalpha="0.8"
+			       	linecolor="0xFFFF00" linewidth="0.0" linealpha="0.8"
+			       	headingoffset="50"
+			  
+				/>
+				
+
+
+
+				<!-- 热点 zorder=2，用style来统一处理 所有layer都载入了一个名为spot的style，注意这里spot是由0开始，而不是由1开始的，因此在一般情况下，地图点与场景一一对应，而场景的index是从0开始的，所以我们可以利用这一点提高代码的可读性-->
+				<layer name="spot18" style="spot_2" x="630" y="155"  parent="huxing2"  />
+				<layer name="spot19" style="spot_2" x="430" y="280"  parent="huxing2" />
+				<layer name="spot20" style="spot_2" x="95"  y="450"   parent="huxing2" />
+				
+				
+				<layer name="spot21" url="skin/home.png"  align="lefttop" edge="center" x="710" y="550" zorder="2" onclick="restartmap();"  parent="huxing2" />  
+				
+				
+				<!-- 激活的热点 zorder=3 开始时候隐藏，在这里是一个绿色的地图点， 表示当前的场景-->
+				<layer name="activespot2" url="skin/vtourskin_mapspotactive.png" scale="0.5" oy="-17" align="lefttop" edge="center" zorder="3" visible="false" parent="huxing2"/>
+			</layer>
+		</layer>
+	</layer>
+	
+<!-- 地图点中相同的代码，都写在了style里面，修改的时候只需要修改style里面的代码，提高了效率。在onclick里，先是用subtxt得出spot后面的数字，也就是index，然后检查是否点击的热点就是当前场景，因为没有必要点击当前场景的热点又载入一遍，如果是点击其他的热点，则载入其他场景，载入场景的loadscene中利用了之前得到的spotid，这样就不用每次都写场景的名字了。-->
+	<style 
+		name="spot_2"
+		url="skin/vtourskin_mapspot.png"
+		scale="0.5"
+		oy="-17"
+		align="lefttop"
+		edge="center"
+		zorder="2"
+		onclick="activeScene2()"
+		/>
+	<action name="activeScene2">
+		<!-- 将当前点击的layer的名字截取一下,得到后面的数字,spot1 => 1,然后将该数字和场景的下标进行对比,如果是点击的是当前已展示的scene则不加载,如果是其他的场景,则重新通过loadscene重新加载 -->
+		subtxt(spotid,get(name),4,2);
+		if(spotid != scene[get(xml.scene)].index,
+			loadscene(get(scene[get(spotid)].name),null,MERGE,BLEND(1,easeinoutback));
+		);
+	</action>
+	<action name="activatespot2">
+		trace("hahahha");
+	   <!-- 因此绿色地图点会在每次激活时替换蓝色普通地图点，因此每次激活之前，首先保证所有蓝色地图点是可见的，如果没有下面这个代码，则会使得上一个场景的蓝色地图点消失，这里用的是一个循环语句-->  
+	    for(set(i,18),i LT scene.count,inc(i),  
+	    txtadd(spotname,'spot',get(i));  
+	    set(layer[get(spotname)].visible, true);  
+	    );  
+	    <!--这样就使得这个activetespot的参数只要一个就可以了-->  
+	    trace(get(xml.scene));
+	    <!-- 将当前激活的场景下标与spot和并,得到spot1,在通过合成后的名字得到layer与此名称相同的标记的坐标,然后将此坐标赋给雷达插件 -->
+	    txtadd(spotidnow,'spot',get(scene[get(xml.scene)].index));
+	    trace(get(spotidnow));
+	    copy(layer[radar2].x, layer[get(spotidnow)].x);  
+	    copy(layer[radar2].y, layer[get(spotidnow)].y);  
+	    copy(layer[activespot2].x, layer[get(spotidnow)].x);  
+	    copy(layer[activespot2].y, layer[get(spotidnow)].y);  
+	  
+	    <!-- 将第二个参数赋值到雷达的heading -->  
+	    set(layer[radar2].heading,%1);  
+	  
+	        <!-- 显示雷达和绿色激活热点，以及隐藏当前场景的地图点 -->  
+	    set(layer[radar2].visible, true);  
+	    set(layer[activespot2].visible, true);  
+	    set(layer[get(spotidnow)].visible, false);
+	</action>
+	
+			<scene name="scene0" title="ppp" onstart="activatespot2(90)" thumburl="panos/0.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/0.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/0.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/0.tiles/mobile_%s.jpg" />
+			</mobile>
+			
+		</image>
+		
+		
+
+
+	</scene>
+	
+	
+
+	<scene name="scene1" title="iii" onstart="activatespot2(360)" thumburl="panos/.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+
+	<scene name="scene2" title="qqq" onstart="activatespot2(90)" thumburl="panos/.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+
+	<scene name="scene3" title="ttt" onstart="activatespot2(90)" thumburl="panos/.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+	
+	<scene name="scene4" title="uuu" onstart="activatespot2(90)" thumburl="panos/.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+	
+	
+		
+	<scene name="scene5" title="ooo" onstart="activatespot2(90)" thumburl="panos/8.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/1_8.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/.tiles/mobile_%s.jpg" />
+			</mobile>
+			
+		</image>
+
+
+	</scene>
+
+	<scene name="scene6" title="捷運GE02站" onstart="activatespot2(360)" thumburl="panos/1_5.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/1_5.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/1_5.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/1_5.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+	
+	<scene name="scene7" title="龍東路" onstart="activatespot2(360)" thumburl="panos/1_10.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/1_10.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/1_10.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/1_10.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+	
+	
+		<scene name="scene8" title="公園" onstart="activatespot2(360)" thumburl="panos/1_1.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/1_1.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/1_1.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/1_1.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+	
+		<scene name="scene9" title="市六" onstart="activatespot2(360)" thumburl="panos/1_2.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/1_2.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/1_2.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/1_2.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+	
+		<scene name="scene10" title="市六" onstart="activatespot2(360)" thumburl="panos/1_2.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/1_2.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/1_2.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/1_2.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+	
+		<scene name="scene11" title="忠貞市場" onstart="activatespot2(360)" thumburl="panos/1_3.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/1_3.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/1_3.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/1_3.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+	
+		<scene name="scene12" title="國宅用地" onstart="activatespot2(360)" thumburl="panos/1_4.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/1_4.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/1_4.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/1_4.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+	
+	
+			<scene name="scene13" title="雲南公園" onstart="activatespot2(360)" thumburl="panos/1_6.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/1_6.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/1_6.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/1_6.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+	
+		<scene name="scene14" title="龍里、龍遊營區間" onstart="activatespot2(360)" thumburl="panos/1_8.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/1_8.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/1_8.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/1_8.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+	
+		<scene name="scene15" title="龍岡圓環" onstart="activatespot2(360)" thumburl="panos/1_9.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/1_9.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/1_9.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/1_9.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+	
+		<scene name="scene16" title="龍潭國中" onstart="activatespot2(360)" thumburl="panos/1_11.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/1_11.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/1_11.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/1_11.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+	
+	
+	
+			<scene name="scene17" title="龍潭國中" onstart="activatespot2(360)" thumburl="panos/1_11.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/1_11.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/1_11.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/1_11.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+	
+	
+	
+	
+	<scene name="scene18" title="GE02" onstart="activatespot2(180)" thumburl="panos/3_1.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="12.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/3_1.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/3_1.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/3_1.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+	
+	
+
+	<scene name="scene19" title="忠貞市場" onstart="activatespot2(190)" thumburl="panos/3_2.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="12.0" fovmin="70" fovmax="140" limitview="auto" />
+
+		<preview url="panos/3_2.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/3_2.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/3_2.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+
+	<scene name="scene20" title="龍岡圓環" onstart="activatespot2(15)" thumburl="panos/3_3.tiles/thumb.jpg" lat="" lng="" heading="">
+
+		<view hlookat="0" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="12.0" fovmin="70" fovmax="160" limitview="auto" />
+
+		<preview url="panos/3_3.tiles/preview.jpg" />
+
+		<image>
+			<cube url="panos/3_3.tiles/pano_%s.jpg" />
+			<mobile>
+				<cube url="panos/3_3.tiles/mobile_%s.jpg" />
+			</mobile>
+		</image>
+
+	</scene>
+
+	
+	
+	
+	<action name="closemap">
+		<!--设定下一次onclick的动作-->
+        set(onclick, openmap() );
+        <!-- 改变XY坐标，将导航图容器移出屏幕，移出过程不设置，即为默认0.5秒-->
+        tween(layer[huxing2].x,0,0.5);
+		 tween(layer[huxing2].y,0,0.5);
+     </action>
+    <action name="openmap">
+		<!--设定下一次onclick的动作-->
+        set(onclick, closemap() );
+       <!-- 改变XY坐标，将导航图容器移入屏幕，移入过程为1秒-->
+        tween(layer[huxing2].x,750,0.5);
+		tween(layer[huxing2].y,0,0.5);
+    </action>
+	
+
+<action name="type6">
+		
+		
+		  loadpanoscene('house.xml','scene_2_4') ;
+		  
+set(layer['huxing2'].visible,false);
+set(layer['huxing'].visible,true);
+
+
+     </action>
+     
+     <action name="type7">
+		
+		
+		  loadpanoscene('house1.xml','scene6') ;
+		  
+set(layer['huxing2'].visible,false);
+set(layer['huxing1'].visible,true);
+
+     </action>
+	
+	<action name="restartmap">
+		 set(layer['huxing2'].visible,false);
+		  loadpanoscene('tour.xml','scene_0') 
+		  
+
+     </action>
+	
+</krpano>
