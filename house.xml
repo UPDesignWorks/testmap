@@ -140,7 +140,7 @@
 
 	<scene name="scene_2_1" title="文化公園" onstart="activatespot(170)" thumburl="panos/2_1.tiles/thumb.jpg" lat="" lng="" heading="">
 
-		<view hlookat="30" vlookat="-135" fovtype="MFOV" fov="120" maxpixelzoom="12.0" fovmin="300" fovmax="140" limitview="auto" />
+		<view hlookat="30" vlookat="0" fovtype="MFOV" fov="120" maxpixelzoom="12.0" fovmin="300" fovmax="140" limitview="auto" />
 
 		<preview url="panos/2_1.tiles/preview.jpg" />
 
